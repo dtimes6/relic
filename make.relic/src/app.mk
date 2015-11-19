@@ -12,40 +12,34 @@ UNIT=$(notdir $(COMPONENT))
 export APP_OBJ=$(OBJ)/$(COMPONENT)
 export APP_DST=$(DST)/$(COMPONENT)
 export APP_BIN=$(BIN)/$(COMPONENT)
-DEPENDENCIES=$(APP_OBJ)/$(UNIT).d
 
-CCAPPS=$(addprefix $(APP_BIN)/,$(addsuffix .exe,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cc)))))
-CPPAPPS=$(addprefix $(APP_BIN)/,$(addsuffix .exe,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cpp)))))
-CXXAPPS=$(addprefix $(APP_BIN)/,$(addsuffix .exe,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cxx)))))
-CAPPS=$(addprefix $(APP_BIN)/,$(addsuffix .exe,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.c)))))
+APPSCC=$(addsuffix .cc,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cc))))
+APPSCPP=$(addsuffix .cpp,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cpp))))
+APPSCXX=$(addsuffix .cxx,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cxx))))
+APPSC=$(addsuffix .c,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.c))))
 
-app: subapps $(CCAPPS) $(CPPAPPS) $(CXXAPPS) $(CAPPS)
-
-$(CCAPPS): $(APP_BIN)/%.exe: %.cc $(DEPENDENCIES)
-	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
-	@mkdir -p $(dir $@)
-	@rm -f $@
-	@APP_SRC=$< ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1;
-
-$(CPPAPPS): $(APP_BIN)/%.exe: %.cpp $(DEPENDENCIES)
-	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
-	@mkdir -p $(dir $@)
-	@rm -f $@
-	@APP_SRC=$< ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1;
-
-$(CXXAPPS): $(APP_BIN)/%.exe: %.cxx $(DEPENDENCIES)
-	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
-	@mkdir -p $(dir $@)
-	@rm -f $@
-	@APP_SRC=$< ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1;
-
-$(CAPPS): $(APP_BIN)/%.exe: %.c $(DEPENDENCIES)
-	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
-	@mkdir -p $(dir $@)
-	@rm -f $@
-	@APP_SRC=$< ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1;
-
-
+app: subapps
+	@for cc in $(APPSCC);                                                 \
+	 do                                                                   \
+	 	mkdir -p $(APP_BIN);											  \
+	 	APP_SRC=$$cc ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1; \
+	 done
+	@for cc in $(APPSCPP);                                                \
+	 do                                                                   \
+	 	mkdir -p $(APP_BIN);											  \
+	 	APP_SRC=$$cc ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1; \
+	 done
+	 @for cc in $(APPSCXX);                                               \
+	 do                                                                   \
+	 	mkdir -p $(APP_BIN);											  \
+	 	APP_SRC=$$cc ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1; \
+	 done
+	 @for cc in $(APPSC);                                                 \
+	 do                                                                   \
+	 	mkdir -p $(APP_BIN);											  \
+	 	APP_SRC=$$cc ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1; \
+	 done
+	 
 subapps:
 	@for item in $(shell ls $(APPSRC));                                        \
 	 do                                                                        \
