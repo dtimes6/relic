@@ -8,6 +8,8 @@ COMPONENT=$(shell pwd | sed 's,$(ROOT),,' | sed 's,^/,,')
 APPMK=$(APPSRC)/$(basename $(APP_SRC)).mk
 APPOBJ=$(APP_OBJ)/$(basename $(APP_SRC)).o
 TARGET=$(APP_BIN)/$(basename $(APP_SRC)).exe
+UNIT=$(notdir $(COMPONENT))
+DEPENDENCIES=$(APP_OBJ)/$(UNIT).d
 
 include $(APPMK)
 
@@ -15,10 +17,14 @@ DLIBS=$(foreach lib,$(LIBS),$(APP_DST)/$(lib)/libRelic$(if $(shell basename $(li
 
 LLIBS=$(foreach lib,$(LIBS),-L $(APP_DST)/$(lib) -lRelic$(if $(shell basename $(lib)) = '.',$(COMPONENT),$(shell basename $(lib))))
 
+all: $(TARGET)
+
 $(TARGET): $(APPOBJ) $(DLIBS)
 	@echo "[LN]  $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
 	@rm -f $@
 	@$(CXX) $(CXXFLAGS) -o $@ $< $(LLIBS) $(ELIBS) $(LOCALLIBS) $(LDFLAGS)
+
+-include $(DEPENDENCIES)
 
 -include include.make
 CXXFLAGS+= $(INC)
@@ -51,3 +57,5 @@ $(APPOBJ): $(APP_SRC)
 	@rm -f $@
 	@$(CXX) $(CXXFLAGS) -c -o $@ $(APP_SRC)
 endif
+
+.PHONY: all

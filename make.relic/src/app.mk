@@ -12,6 +12,7 @@ UNIT=$(notdir $(COMPONENT))
 export APP_OBJ=$(OBJ)/$(COMPONENT)
 export APP_DST=$(DST)/$(COMPONENT)
 export APP_BIN=$(BIN)/$(COMPONENT)
+DEPENDENCIES=$(APP_OBJ)/$(UNIT).d
 
 CCAPPS=$(addprefix $(APP_BIN)/,$(addsuffix .exe,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cc)))))
 CPPAPPS=$(addprefix $(APP_BIN)/,$(addsuffix .exe,$(filter $(basename $(wildcard *.mk)), $(basename $(wildcard *.cpp)))))
@@ -20,25 +21,25 @@ CAPPS=$(addprefix $(APP_BIN)/,$(addsuffix .exe,$(filter $(basename $(wildcard *.
 
 app: subapps $(CCAPPS) $(CPPAPPS) $(CXXAPPS) $(CAPPS)
 
-$(CCAPPS): $(APP_BIN)/%.exe: %.cc
+$(CCAPPS): $(APP_BIN)/%.exe: %.cc $(DEPENDENCIES)
 	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
 	@mkdir -p $(dir $@)
 	@rm -f $@
 	@APP_SRC=$< ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1;
 
-$(CPPAPPS): $(APP_BIN)/%.exe: %.cpp
+$(CPPAPPS): $(APP_BIN)/%.exe: %.cpp $(DEPENDENCIES)
 	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
 	@mkdir -p $(dir $@)
 	@rm -f $@
 	@APP_SRC=$< ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1;
 
-$(CXXAPPS): $(APP_BIN)/%.exe: %.cxx
+$(CXXAPPS): $(APP_BIN)/%.exe: %.cxx $(DEPENDENCIES)
 	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
 	@mkdir -p $(dir $@)
 	@rm -f $@
 	@APP_SRC=$< ${MAKE} -C $(APPSRC) -f $(MK_ROOT)/exe.mk || exit 1;
 
-$(CAPPS): $(APP_BIN)/%.exe: %.c
+$(CAPPS): $(APP_BIN)/%.exe: %.c $(DEPENDENCIES)
 	@echo "[BIN] $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
 	@mkdir -p $(dir $@)
 	@rm -f $@

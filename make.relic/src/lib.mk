@@ -27,10 +27,14 @@ $(DEPENDENCIES): $(wildcard *.cpp *hpp *.cxx *.hxx *.cc *.hh *.c *.h)
 	@echo "[LIB] $(COMPONENT)/$(notdir $@)"
 	@rm -f $(DEPENDENCIES)
 	@mkdir -p $(dir $(DEPENDENCIES))
-	@$(CXX) $(CXXFLAGS) -MM *.cpp *.cxx *.cc 2>/dev/null | \
-	sed 's,^\<,$(DEPENDENCIES) $(DST),' >> $(DEPENDENCIES)
+	@$(CXX) $(CXXFLAGS) -MM *.cpp 2>/dev/null | \
+	sed 's,^\([A-Za-z_]*\.o\),$(DEPENDENCIES) $(LIB_OBJ)/\1,' >> $(DEPENDENCIES)
+	@$(CXX) $(CXXFLAGS) -MM *.cxx 2>/dev/null | \
+	sed 's,^\([A-Za-z_]*\.o\),$(DEPENDENCIES) $(LIB_OBJ)/\1,' >> $(DEPENDENCIES)
+	@$(CXX) $(CXXFLAGS) -MM *.cc 2>/dev/null | \
+	sed 's,^\([A-Za-z_]*\.o\),$(DEPENDENCIES) $(LIB_OBJ)/\1,' >> $(DEPENDENCIES)
 	@$(CC) $(CFLAGS) -MM *.c 2>/dev/null | \
-	sed 's,^\<,$(DEPENDENCIES) $(DST),' >> $(DEPENDENCIES)
+	sed 's,^\([A-Za-z_]*\.o\),$(DEPENDENCIES) $(LIB_OBJ)/\1,' >> $(DEPENDENCIES)
 
 $(ARCHIVE): $(CCOBJS) $(CPPOBJS) $(CXXOBJS) $(COBJS)
 	@echo "[AR]  $(COMPONENT)/$(notdir $@)"
