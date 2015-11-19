@@ -11,9 +11,9 @@ TARGET=$(APP_BIN)/$(basename $(APP_SRC)).exe
 
 include $(APPMK)
 
-DLIBS=$(foreach lib,$(LIBS),$(APP_DST)/$(lib)/libRelic$(shell basename $(lib)).a)
+DLIBS=$(foreach lib,$(LIBS),$(APP_DST)/$(lib)/libRelic$(if $(shell basename $(lib)) = '.',$(COMPONENT),$(shell basename $(lib))).a)
 
-LLIBS=$(foreach lib,$(LIBS),-L $(APP_DST)/$(lib) -lRelic$(shell basename $(lib)))
+LLIBS=$(foreach lib,$(LIBS),-L $(APP_DST)/$(lib) -lRelic$(if $(shell basename $(lib)) = '.',$(COMPONENT),$(shell basename $(lib))))
 
 $(TARGET): $(APPOBJ) $(DLIBS)
 	@echo "[LN]  $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
