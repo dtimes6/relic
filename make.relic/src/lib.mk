@@ -19,7 +19,7 @@ COBJS=$(addprefix $(LIB_OBJ)/,$(addsuffix .o,$(filter-out $(basename $(wildcard 
 ARCHIVE=$(if $(CCOBJS)$(CPPOBJS)$(CXXOBJS)$(COBJS), $(LIB_DST)/libRelic$(UNIT).a, )
 DEPENDENCIES=$(LIB_OBJ)/$(UNIT).d
 
-lib: sublibs $(ARCHIVE) external
+lib: sublibs $(ARCHIVE)
 
 -include $(DEPENDENCIES)
 
