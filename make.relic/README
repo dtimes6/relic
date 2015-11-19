@@ -1,0 +1,15 @@
+#
+# Copyright(C) Relic Fragments 2015. All rights reserved !
+#
+
+Usage:
+
+	export DEBUGMK=<PATH_TO_MAKE.RELIC>/debug.mk
+
+cd into any directory with in the relic region
+
+	make -f $DEBUGMK
+
+or
+
+	make -f $DEBUGMK clean
