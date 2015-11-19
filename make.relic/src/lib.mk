@@ -19,7 +19,7 @@ COBJS=$(addprefix $(LIB_OBJ)/,$(addsuffix .o,$(filter-out $(basename $(wildcard 
 ARCHIVE=$(if $(CCOBJS)$(CPPOBJS)$(CXXOBJS)$(COBJS), $(LIB_DST)/libRelic$(UNIT).a, )
 DEPENDENCIES=$(LIB_OBJ)/$(UNIT).d
 
-lib: sublibs $(ARCHIVE)
+lib: sublibs $(ARCHIVE) external
 
 -include $(DEPENDENCIES)
 
@@ -41,6 +41,14 @@ $(ARCHIVE): $(CCOBJS) $(CPPOBJS) $(CXXOBJS) $(COBJS)
 	@if [ ! X$(CXXOBJS) = "X" ]; then ar -r -c $@ $(CXXOBJS) 1>/dev/null 2>&1; fi
 	@if [ ! X$(COBJS) = "X" ]; then ar -r -c $@ $(COBJS) 1>/dev/null 2>&1; fi
 	@ranlib $@ 1>/dev/null 2>&1
+
+sublibs:
+	@for item in $(shell ls $(LIBSRC));                                        \
+	 do                                                                        \
+	     if [ -d $(LIBSRC)/$$item ]; then                                      \
+	         ${MAKE} -C $(LIBSRC)/$$item -f $(MK_ROOT)/directory.mk lib;       \
+	     fi                                                                    \
+	 done
 
 -include include.make
 CXXFLAGS+= $(INC)
@@ -65,13 +73,5 @@ $(COBJS): $(LIB_OBJ)/%.o: %.c $(LIBDEP)
 	@echo "[CC]  $(COMPONENT)/$(CONFIGURATION)/$(notdir $@)"
 	@rm -f $@
 	@$(CC) -c $(CFLAGS) -o $@ $<
-
-sublibs:
-	@for item in $(shell ls $(LIBSRC));                                        \
-	 do                                                                        \
-	     if [ -d $(LIBSRC)/$$item ]; then                                      \
-	         ${MAKE} -C $(LIBSRC)/$$item -f $(MK_ROOT)/directory.mk lib;       \
-	     fi                                                                    \
-	 done
 	
 .PHONY: lib sublibs
