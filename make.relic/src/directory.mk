@@ -14,7 +14,7 @@ app: lib
 	    ${MAKE} -C $(DIRSRC) -f $(MK_ROOT)/app.mk app; \
 	 fi
 
-lib:
+lib: external
 	@if [ -f configure ]; then                         \
 		./configure;                                   \
 	 fi
@@ -23,6 +23,16 @@ lib:
 	 else                                              \
 	    ${MAKE} -C $(DIRSRC) -f $(MK_ROOT)/lib.mk lib; \
 	 fi
+
+-include include.make
+
+external:
+	@for item in $(EXTERNAL);                          \
+	do                                                 \
+	  if [ -d $$item ]; then                           \
+		${MAKE} -C $$item -f $(MK_ROOT)/lib.mk lib;    \
+	  fi                                               \
+	done
 
 COMPONENT=$(shell pwd | sed 's,$(ROOT),,' | sed 's,^/,,')
 APP_OBJ=$(OBJ)/$(COMPONENT)
@@ -38,4 +48,4 @@ clean:
 	    rm -rf $(APP_BIN);                             \
 	 fi 
 
-.PHONY: directory
+.PHONY: directory external
