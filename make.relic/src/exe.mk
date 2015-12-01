@@ -11,11 +11,13 @@ TARGET=$(APP_BIN)/$(basename $(APP_SRC)).exe
 UNIT=$(notdir $(COMPONENT))
 DEPENDENCIES=$(APP_OBJ)/$(UNIT).d
 
+eq = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
+
 include $(APPMK)
 
-DLIBS=$(foreach lib,$(LIBS),$(APP_DST)/$(lib)/libRelic$(if $(shell basename $(lib)) = '.',$(COMPONENT),$(shell basename $(lib))).a)
+DLIBS=$(foreach lib,$(LIBS),$(APP_DST)/$(lib)/libRelic$(if $(call eq, $(shell basename $(lib)), .),$(COMPONENT),$(shell basename $(lib))).a)
 
-LLIBS=$(foreach lib,$(LIBS),-L $(APP_DST)/$(lib) -lRelic$(if $(shell basename $(lib)) = '.',$(COMPONENT),$(shell basename $(lib))))
+LLIBS=$(foreach lib,$(LIBS),-L $(APP_DST)/$(lib) -lRelic$(if $(call eq, $(shell basename $(lib)), .),$(COMPONENT),$(shell basename $(lib))))
 
 all: $(TARGET)
 
